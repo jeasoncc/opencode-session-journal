@@ -53,7 +53,7 @@ OpenCode Session Journal is a lightweight skill that provides **simple session p
 ### Installation
 
 ```bash
-git clone https://github.com/woniuxiaodi/opencode-session-journal.git
+git clone https://github.com/jeasoncc/opencode-session-journal.git
 cd opencode-session-journal
 ./install.sh
 ```
