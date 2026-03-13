@@ -158,45 +158,72 @@ AI: "I see you're working on auth again. Based on your previous
 
 ## Architecture: How It Works
 
-YOU → "Implement auth" → AI [observes everything]
-                        ↓
-                    /session-journal-save
-                        ↓
-        AI generates complete journal:
-        • Timeline of decisions
-        • Problems and solutions
-        • Your preferences (observed)
-        • Metadata (tags, topics)
-        • content_complete: true
-                        ↓
-            write-journal.sh
-            • Validate completeness
-            • Atomic write
-            • Update indexes
-                        ↓
-        Storage:
-        • ~/.opencode/session-journals/
-        • ~/.opencode/knowledge-graph/
-        • ~/.opencode/profile/
-        • ~/.opencode/learned/
-                        ↓
-        [Time passes...]
-                        ↓
-        /session-journal-profile
-        AI reads 30 journals
-        Extracts patterns:
-        - "Prefers functional"
-        - "Security-first mindset"
-        - "Explicit error handling"
-        Updates user-profile.yaml
-                        ↓
-        [More time passes...]
-                        ↓
-        "Help with auth"
-                        ↓
-        AI loads profile:
-        "This user prefers..."
-        Response adapts to YOUR style
+```
+┌─────────┐     ┌─────────────────┐     ┌──────────────────────┐
+│   YOU   │────▶│  AI Assistant   │────▶│  Observes Everything │
+└─────────┘     └─────────────────┘     └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │ /session-journal-save │
+                                    └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │ AI Generates Journal: │
+                                    │ • Timeline            │
+                                    │ • Problems/Solutions  │
+                                    │ • Your Preferences    │
+                                    │ • Metadata            │
+                                    │ • content_complete    │
+                                    └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │   write-journal.sh   │
+                                    │ • Validate           │
+                                    │ • Atomic Write       │
+                                    │ • Update Indexes     │
+                                    └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │       STORAGE        │
+                                    │ ~/.opencode/         │
+                                    │  ├── session-journals│
+                                    │  ├── knowledge-graph │
+                                    │  ├── profile/        │
+                                    │  └── learned/        │
+                                    └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │   [Time passes...]   │
+                                    │                      │
+                                    │ /session-journal-    │
+                                    │ profile              │
+                                    │                      │
+                                    │ AI reads 30 journals │
+                                    │ Extracts patterns:   │
+                                    │ • "Prefers func"     │
+                                    │ • "Security-first"   │
+                                    │ Updates profile.yaml │
+                                    └──────────────────────┘
+                                                │
+                                                ▼
+                                    ┌──────────────────────┐
+                                    │   [More time...]     │
+                                    │                      │
+                                    │ "Help with auth"     │
+                                    │                      │
+                                    │ AI loads profile:    │
+                                    │ "This user prefers   │
+                                    │  functional style..."│
+                                    │                      │
+                                    │ Response adapts to   │
+                                    │ YOUR style           │
+                                    └──────────────────────┘
+```
 
 **Key Principle**: AI understands and generates. Scripts validate and write. Storage persists. Over time, the AI learns you.
 
@@ -242,6 +269,119 @@ cd opencode-session-journal
 ```
 
 **Requirements**: Bash 4.0+, Python 3.6+
+
+---
+
+## Journal File Format
+
+A complete journal is a markdown file with YAML frontmatter:
+
+```markdown
+---
+session_id: ses_abc123
+timestamp: 1741234567
+datetime: 2026-03-14 10:30:00
+duration_minutes: 45
+content_complete: true
+
+tags:
+  auto: [auth, jwt, security]
+  user: [important]
+  confidence: 0.92
+
+topics:
+  primary: authentication
+  secondary: [security, api-design]
+  confidence: 0.88
+
+categories:
+  domain: backend
+  type: feature-implementation
+  complexity: medium
+  phase: implementation
+
+summary: |
+  Implemented JWT authentication with refresh tokens.
+  Chose jose over jsonwebtoken for better TypeScript support.
+
+patterns_detected:
+  - id: research-before-implement
+    description: Researched libraries before choosing
+    confidence: 0.85
+
+preferences_observed:
+  - id: security-over-convenience
+    description: Prioritized security even when complex
+    confidence: 0.90
+
+links:
+  related_sessions: []
+  related_skills: []
+  related_files:
+    - src/middleware/auth.ts
+
+learned: false
+profiled: false
+---
+
+# Session Journal - ses_abc123
+
+**Start Time**: 2026-03-14 10:30:00
+**Task**: Implement JWT authentication
+
+---
+
+## Session Timeline
+
+### 🎯 Started Task: JWT Auth
+- **User Request**: Add JWT authentication
+- **Initial State**: No auth system
+- **Plan**: Research → Implement → Test
+
+### 🔧 Action: Research libraries
+- Compared jose vs jsonwebtoken
+- Chose jose for TypeScript support
+
+### ✅ Completed: JWT Implementation
+- Access tokens: 15min expiry
+- Refresh tokens: 7 day expiry
+- httpOnly cookies for XSS protection
+
+---
+
+## 📊 Session Summary
+
+### Completed Work
+1. ✅ Implemented JWT authentication
+2. ✅ Added refresh token rotation
+3. ✅ Configured httpOnly cookies
+
+### Key Decisions
+- **Security > convenience**: httpOnly despite complexity
+
+### Current State
+- Auth system running on port 8080
+- All tests passing
+
+### Pending Tasks
+- [ ] Test token expiration edge cases
+- [ ] Add rate limiting
+
+### Important Files
+- `src/middleware/auth.ts`
+- `src/routes/auth.ts`
+
+### Recommendations for Next Session
+1. Test token expiration edge cases
+2. Add rate limiting
+
+---
+
+**Session End Time**: 2026-03-14 11:15:00
+**Total Duration**: 45 minutes
+```
+
+This is not just a log—it's **training data for your personal AI**.
 
 ---
 
